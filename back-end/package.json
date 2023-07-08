@@ -1,0 +1,43 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "Networking App back-end",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "server": "nodemon --ext js,pug --ignore public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SahilSamel/Graph-networking-view.git"
+  },
+  "author": "Sahil, Aaryan, Pranali",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SahilSamel/Graph-networking-view/issues"
+  },
+  "homepage": "https://github.com/SahilSamel/Graph-networking-view#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.4",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "firebase": "^9.22.1",
+    "firebase-admin": "^11.9.0",
+    "fs": "^0.0.1-security",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "neo4j-driver": "^5.9.0",
+    "pg": "^8.11.1",
+    "url": "^0.11.1"
+  }
+}
