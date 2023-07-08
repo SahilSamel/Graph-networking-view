@@ -1,5 +1,6 @@
 import pkg from 'pg';
 const {Client} = pkg;
+import 'dotenv/config';
 
 const client = new Client({
     user: process.env.PostgresUSER,
@@ -18,3 +19,4 @@ client.connect()
     });
 
 export default client;
+``
