@@ -1,59 +1,111 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import driver from "../connections/neo4j.js"
-import client from "../connections/postgresConnection.js";
+import pkg from 'pg';
+const {Client} = pkg;
+import dbConfig from "../connections/postgresConnection.js"
+import driver from "../connections/neo4j.js";
 import jwt from "jsonwebtoken";
+
 // Database Entry for User
-const registerUser = (uid,email,userName,profImgURL) => {
-  const session = driver.session(); // neo4j session creation
+const registerUser = async (
+  uid,
+  profImgURL,
+  userName,
+  name,
+  email,
+  bio,
+  hobbies,
+  occupation,
+  education
+) => {
+  const client = new Client(dbConfig);
 
-  session
-    .run("CREATE (:User {userId: $uid,userName: $userName,profImgURL:$profImgURL}) ", { uid,userName,profImgURL }) // Create query for Neo4j Cypher
-    // .then(() => {
-    //       console.log("User saved successfully.");
-    //       client.connect();
+  try {
+    await client.connect();
 
-    //       try {
-    //         const query = 'SELECT register_user($1, $2)';
-    //         const values = [`${userName}`, `${email}`];
-    //         const result = client.query(query, values);
-    //         // Handle successful function execution
-    //         console.log(result.rows[0].register_user); // Access the return value if applicable
-    //       } catch (error) {
-    //         console.error('An error occurred:', error.message);
-    //       }
-          
-    //       // Disconnect from the database
-    //       client.end();
+    const session = driver.session();
+    await session.run(
+      "CREATE (:User {userId: $uid, userName: $userName, profImgURL: $profImgURL}) ",
+      { uid, userName, profImgURL }
+    );
+    console.log("User saved successfully.");
 
-    // })
-    .catch((error) => {
-      console.log("Error creating node:", error);
-    })
-    .finally(() => {
-      session.close(); // Close the Neo4j session
-    });
+    const query = "SELECT create_user($1, $2, $3, $4, $5, $6, $7, $8, $9)";
+    const values = [
+      `${uid}`,
+      `${profImgURL}`,
+      `${userName}`,
+      `${name}`,
+      `${email}`,
+      `${bio}`,
+      `${hobbies}`,
+      `${occupation}`,
+      `${education}`,
+    ];
+    const result = await client.query(query, values);
+
+    console.log(result.rows[0].create_user);
+  } catch (error) {
+    console.error("An error occurred:", error.message);
+  } finally {
+    client.end();
+  }
+};
+
+// Check if user handle already in use
+const checkUserNameExists = async (userName) => {
+  const client = new Client(dbConfig);
+  try {
+    await client.connect();
+    const query = "SELECT check_user_exists($1)";
+    const values = [userName];
+    const result = await client.query(query, values);
+    console.log(result.rows[0].check_user_exists);
+  } catch (error) {
+    console.error("An error occurred:", error.message);
+  } finally {
+    client.end();
+  }
 };
 
 // Creating new User entry
 const createUser = (req, res) => {
   const auth = getAuth();
-  const { email, password, userName,profImgURL} = req.body;
+  const {
+    email,
+    password,
+    profImgURL,
+    userName,
+    name,
+    bio,
+    hobbies,
+    occupation,
+    education,
+  } = req.body;
 
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      console.log("User created successfully:", user.uid);
+      console.log("User created successfully:");
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
-      console.log("Token created successfully:", token);
+      console.log("Token created successfully:");
       const uid = user.uid;
 
-      registerUser(uid,email,userName,profImgURL); // Make mongo and neo4j entry
-      res.status(201).json({ token, uid}); // Pass auth token as response
+      registerUser(
+        uid,
+        profImgURL,
+        userName,
+        name,
+        email,
+        bio,
+        hobbies,
+        occupation,
+        education
+      ); // Make mongo and neo4j entry
+      res.status(201).json({ token, uid }); // Pass auth token as response
     })
     .catch((error) => {
       res.status(409).json({ error: error.message });
     });
 };
 
-
-export {createUser};
+export { createUser };
