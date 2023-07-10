@@ -1,4 +1,4 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import driver from "../connections/neo4j.js"
 import client from "../connections/postgresConnection.js";
 import jwt from "jsonwebtoken";
@@ -55,5 +55,25 @@ const createUser = (req, res) => {
     });
 };
 
+const signIn = (req, res) => {
+  const auth = getAuth();
+  const { email, password } = req.body;
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
+      const uid = user.uid;
 
-export {createUser};
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: true, // Set to true when using HTTPS
+        sameSite: 'none',
+      }).status(201).json({ token, uid });
+    })
+    .catch((error) => {
+      res.status(401).json({ error:error.message});
+    });
+};
+
+
+export {createUser,signIn};
