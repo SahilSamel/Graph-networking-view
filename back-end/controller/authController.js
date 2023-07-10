@@ -1,22 +1,27 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import pkg from 'pg';
-const {Client} = pkg;
-import dbConfig from "../connections/postgresConnection.js"
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import pkg from "pg";
+const { Client } = pkg;
+import dbConfig from "../connections/postgresConnection.js";
 import driver from "../connections/neo4j.js";
 import jwt from "jsonwebtoken";
 
 // Database Entry for User
-const registerUser = async (
-  uid,
-  profImgURL,
-  userName,
-  name,
-  email,
-  bio,
-  hobbies,
-  occupation,
-  education
-) => {
+const registerUser = async (req, res) => {
+  const {
+    uid,
+    email,
+    profImgURL,
+    userName,
+    name,
+    bio,
+    hobbies,
+    occupation,
+    education,
+  } = req.body;
   const client = new Client(dbConfig);
 
   try {
@@ -85,23 +90,9 @@ const createUser = (req, res) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      console.log("User created successfully:");
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
-      console.log("Token created successfully:");
       const uid = user.uid;
-
-      registerUser(
-        uid,
-        profImgURL,
-        userName,
-        name,
-        email,
-        bio,
-        hobbies,
-        occupation,
-        education
-      ); // Make mongo and neo4j entry
-      res.status(201).json({ token, uid }); // Pass auth token as response
+      res.status(201).json({ token, uid });
     })
     .catch((error) => {
       res.status(409).json({ error: error.message });
@@ -117,15 +108,18 @@ const signIn = (req, res) => {
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true, // Set to true when using HTTPS
-        sameSite: 'none',
-      }).status(201).json({ token, uid });
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: true, // Set to true when using HTTPS
+          sameSite: "none",
+        })
+        .status(201)
+        .json({ token, uid });
     })
     .catch((error) => {
-      res.status(401).json({ error:error.message});
+      res.status(401).json({ error: error.message });
     });
 };
 
-export {createUser,signIn};
+export { createUser, registerUser, signIn };
