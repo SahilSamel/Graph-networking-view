@@ -1,8 +1,10 @@
 import express from "express"
-import { fetchGraph } from "../controller/graphController";
+import { fetchGraph } from "../controller/graphController.js";
 
 const router = express.Router();
 
-router.post("/fetchGraph",(req,res)=>{
+router.get("/fetchGraph",(req,res)=>{
     fetchGraph(req,res);
 });
+
+export default router;

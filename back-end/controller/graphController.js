@@ -4,7 +4,7 @@ const fetchGraph = (req, res) => {
   const session = driver.session();
   const query = `
     MATCH (n)-[r]->(m)
-    RETURN n.id AS source, m.id AS target, n.username AS sourceUsername, m.username AS targetUsername, n.profileImage AS sourceProfileImage, m.profileImage AS targetProfileImage
+    RETURN n.userId AS source, m.userId AS target, n.userName AS sourceUsername, m.userName AS targetUsername, n.profImgURL AS sourceProfileImage, m.profImgURL AS targetProfileImage
   `;
 
   session
