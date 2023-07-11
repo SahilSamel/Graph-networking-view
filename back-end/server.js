@@ -11,13 +11,15 @@ const app = express();
 
 // <-- Route Imports -->
 import authRouter from "./routes/authRoutes.js"
+import profileRouter from "./routes/profileRoutes.js"
+import graphRouter from "./routes/graphRoutes.js"
 // <-- End of Route Imports -->
 
 // <-- Middleware -->
 app.use(express.json());
 app.use(helmet());
 app.use(cors({
-  origin: 'http://localhost:4200', // Allow all origins
+  origin: 'http://localhost:3000', // Allow all origins
   credentials: true, // Allow credentials (cookies) to be included``
 }));
 
@@ -28,7 +30,9 @@ app.use(cookieParser());
 // <-- End of Middleware -->
 
 // <-- Routes -->
-app.use("/auth",authRouter)
+app.use("/auth",authRouter);
+app.use("/profile",profileRouter);
+app.use("/graph",graphRouter);
 // <-- End of Routes -->
 
 
