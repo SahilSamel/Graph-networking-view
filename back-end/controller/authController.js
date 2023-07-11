@@ -79,14 +79,7 @@ const createUser = (req, res) => {
   const auth = getAuth();
   const {
     email,
-    password,
-    profImgURL,
-    userName,
-    name,
-    bio,
-    hobbies,
-    occupation,
-    education,
+    password
   } = req.body;
 
   createUserWithEmailAndPassword(auth, email, password)

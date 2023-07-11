@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import fapp from "./connections/firebaseconfig.js"
 
 // <-- Connections import -->
-import client from "./connections/postgresConnection.js";
 const app = express();
 // <-- End of Connections import -->
 
