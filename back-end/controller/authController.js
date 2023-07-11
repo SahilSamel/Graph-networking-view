@@ -5,6 +5,8 @@ import {
 } from "firebase/auth";
 import pkg from "pg";
 const { Client } = pkg;
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(CLIENT_ID);
 import dbConfig from "../connections/postgresConnection.js";
 import driver from "../connections/neo4j.js";
 import jwt from "jsonwebtoken";

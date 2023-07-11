@@ -34,6 +34,7 @@
     "firebase": "^9.22.1",
     "firebase-admin": "^11.9.0",
     "fs": "^0.0.1-security",
+    "google-auth-library": "^8.9.0",
     "helmet": "^7.0.0",
     "jsonwebtoken": "^9.0.0",
     "neo4j-driver": "^5.9.0",
