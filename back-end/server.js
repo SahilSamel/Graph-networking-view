@@ -11,6 +11,7 @@ const app = express();
 
 // <-- Route Imports -->
 import authRouter from "./routes/authRoutes.js"
+import profileRouter from "./routes/profileRoutes.js"
 import graphRouter from "./routes/graphRoutes.js"
 // <-- End of Route Imports -->
 
@@ -30,6 +31,7 @@ app.use(cookieParser());
 
 // <-- Routes -->
 app.use("/auth",authRouter);
+app.use("/profile",profileRouter);
 app.use("/graph",graphRouter);
 // <-- End of Routes -->
 
