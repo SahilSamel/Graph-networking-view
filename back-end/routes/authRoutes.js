@@ -1,4 +1,4 @@
-import { createUser, registerUser, signIn } from "../controller/authController.js"
+import { createUser, registerUser, signIn, googleUidCheck } from "../controller/authController.js"
 import express from "express"
 import verifyToken from "../middleware/verifyToken.js";
 
@@ -14,6 +14,10 @@ router.post("/createprofile",(req,res)=>{
 
 router.post("/signin",(req,res)=>{
     signIn(req,res);
+})
+
+router.post("/google",(req,res)=>{
+    googleUidCheck(req,res);
 })
 
 

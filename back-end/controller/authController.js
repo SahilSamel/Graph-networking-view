@@ -5,8 +5,7 @@ import {
 } from "firebase/auth";
 import pkg from "pg";
 const { Client } = pkg;
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(CLIENT_ID);
+
 import dbConfig from "../connections/postgresConnection.js";
 import driver from "../connections/neo4j.js";
 import jwt from "jsonwebtoken";
@@ -94,6 +93,24 @@ const createUser = (req, res) => {
     });
 };
 
+//check if uid exists in postgres db
+const googleUidCheck = async (req,res) => {
+  const { uid } = req.body;
+  const client = new Client(dbConfig);
+  try {
+    await client.connect();
+    const query = "SELECT check_uid_exists($1)";
+    const values = [uid];
+    const result = await client.query(query, values);
+    res.status(200).json({ result });
+  } catch (error) {
+    console.error("An error occurred:", error.message);
+  } finally {
+    client.end();
+  }
+};
+
+
 const signIn = (req, res) => {
   const auth = getAuth();
   const { email, password } = req.body;
@@ -117,4 +134,5 @@ const signIn = (req, res) => {
     });
 };
 
-export { createUser, registerUser, signIn };
+
+export { createUser, registerUser, signIn, googleUidCheck };
