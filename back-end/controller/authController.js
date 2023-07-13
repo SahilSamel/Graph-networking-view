@@ -76,10 +76,7 @@ const checkUserNameExists = async (userName) => {
 // Creating new User entry
 const createUser = (req, res) => {
   const auth = getAuth();
-  const {
-    email,
-    password
-  } = req.body;
+  const { email, password } = req.body;
 
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -94,7 +91,7 @@ const createUser = (req, res) => {
 };
 
 //check if uid exists in postgres db
-const googleUidCheck = async (req,res) => {
+const googleUidCheck = async (req, res) => {
   const { uid } = req.body;
   const client = new Client(dbConfig);
   try {
@@ -110,7 +107,7 @@ const googleUidCheck = async (req,res) => {
   }
 };
 
-
+// Sign In with Email and Pass
 const signIn = (req, res) => {
   const auth = getAuth();
   const { email, password } = req.body;
@@ -123,7 +120,7 @@ const signIn = (req, res) => {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: true, // Set to true when using HTTPS
+          secure: true,
           sameSite: "none",
         })
         .status(201)
@@ -133,6 +130,5 @@ const signIn = (req, res) => {
       res.status(401).json({ error: error.message });
     });
 };
-
 
 export { createUser, registerUser, signIn, googleUidCheck };

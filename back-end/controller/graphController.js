@@ -1,10 +1,13 @@
 import driver from "../connections/neo4j.js";
 
+// <-- GRAPH FUNCTIONALITIES -->
+
+// Fetching the user specific graph
 const fetchGraph = (req, res) => {
   const session = driver.session();
   const query = `
-    MATCH (n)-[r]->(m)
-    RETURN n.userId AS source, m.userId AS target, n.userName AS sourceUsername, m.userName AS targetUsername, n.profImgURL AS sourceProfileImage, m.profImgURL AS targetProfileImage
+  MATCH (n)-[r]->(m)
+  RETURN n.userId AS source, m.userId AS target, n.userName AS sourceUsername, m.userName AS targetUsername, n.profImgURL AS sourceProfileImage, m.profImgURL AS targetProfileImage
   `;
 
   session
@@ -51,8 +54,9 @@ const fetchGraph = (req, res) => {
       res.status(500).json({ error: "An error occurred" });
     })
     .finally(() => {
-        session.close();
+      session.close();
     });
 };
 
-export {fetchGraph}
+// <-- End of GRAPH FUNCTIONALITIES -->
+export { fetchGraph };

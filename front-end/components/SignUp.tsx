@@ -22,7 +22,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
+  const onSubmit: SubmitHandler<Inputs> = (data: any) => {
     const jsonData = JSON.stringify(data);
     POST("/auth/signup", jsonData, function (err: any, data: any) {
       if (err) {
@@ -40,7 +40,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
       if (err) {
         console.log(err);
       } else {
-        if (data.result==true) {
+        if (data.result == true) {
           console.log("user exists");
         } else {
           console.log("user does not exist");
@@ -50,27 +50,21 @@ export default function SignUp({ toggleForm }: SignUpProps) {
   };
 
   const provider = new GoogleAuthProvider();
+
   const handleGoogleSignIn = () => {
     const auth = getAuth(fapp);
     signInWithPopup(auth, provider)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (credential === null) return;
-        const token = credential.accessToken;
         const uid = result.user.uid;
-        console.log(token);
-        console.log(uid);
         submitGoogleuid(uid);
       })
       .catch((error) => {
-        // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
-        // The email of the user's account used.
         const email = error.customData.email;
-        // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
       });
   };
 
