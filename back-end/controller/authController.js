@@ -21,7 +21,7 @@ const createUser = (req, res) => {
     .then((userCredential) => {
       const user = userCredential.user;
       const uid = user.uid;
-      req.userId = uid;
+      req.uid = uid;
       assignCookies(req, res);
     })
     .catch((error) => {
@@ -38,7 +38,8 @@ const signIn = (req, res) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
-      req.userId = uid;
+      req.uid = uid;
+      
       assignCookies(req, res);
     })
     .catch((error) => {
@@ -57,7 +58,7 @@ const checkLogin = (req, res) => {
 
 // Check if user logged In
 const assignCookies = (req, res) => {
-  const { uid } = req.body;
+  const { uid } = req;
   const token = jwt.sign({ id: uid }, process.env.JWT_SECRET);
   res
     .cookie("token", token, {
@@ -75,7 +76,8 @@ const assignCookies = (req, res) => {
 
 // Database check for user information
 const uidDatabaseCheck = async (req, res) => {
-  const { uid } = req.body;
+  console.log("Rane gae")
+  const { userId } = req.body;
   const client = new Client(dbConfig);
   try {
     await client.connect();

@@ -1,9 +1,8 @@
-
-import { useState, useEffect } from "react";
-;
+import { useState, useEffect } from "react";;
 import { useRouter } from "next/router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import POST from "@/api/POST/POST";
+
 type Inputs = {
   email: string;
   password: string;

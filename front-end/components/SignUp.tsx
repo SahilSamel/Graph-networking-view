@@ -5,6 +5,7 @@ import fapp from "@/connections/firebaseconfig";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { setUserId } from "@/state/authStates";
+
 type Inputs = {
   email: string;
   password: string;
@@ -25,7 +26,9 @@ export default function SignUp({ toggleForm }: SignUpProps) {
   } = useForm<Inputs>();
 
   const dispatch = useDispatch();
+
   const onSubmit: SubmitHandler<Inputs> = (data: any) => {
+    console.log(data)
     const jsonData = JSON.stringify(data);
     POST("/auth/signup", jsonData, function (err: any, data: any) {
       if (err) {
@@ -74,7 +77,8 @@ export default function SignUp({ toggleForm }: SignUpProps) {
         <h1 className="text-3xl font-bold mb-6 text-slate-200	 text-center ">
           Sign up for Twitter
         </h1>
-        <form className="w-full max-w-sm mx-auto flex flex-col ">
+        <form className="w-full max-w-sm mx-auto flex flex-col "
+        onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label
               className="block text-slate-200	 text-sm font-bold mb-2"
@@ -113,49 +117,10 @@ export default function SignUp({ toggleForm }: SignUpProps) {
               </span>
             )}
           </div>
-          <div className="mb-4">
-            <label
-              className="block text-slate-200	 text-sm font-bold mb-2"
-              htmlFor="userHandle"
-            >
-              User Handle
-            </label>
-            <input
-              className="appearance-none border rounded w-full py-2 px-3 text-slate-200	 leading-tight focus:outline-none focus:shadow-outline bg-black	"
-              type="text"
-              placeholder="User Handle"
-              {...register("userHandle", { required: true })}
-            />
-            {errors.userHandle && (
-              <span className="text-red-500 text-xs">
-                This field is required
-              </span>
-            )}
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-slate-200	 text-sm font-bold mb-2"
-              htmlFor="userHandle"
-            >
-              User Name
-            </label>
-            <input
-              className="appearance-none border rounded w-full py-2 px-3 text-slate-200	 leading-tight focus:outline-none focus:shadow-outline bg-black	"
-              type="text"
-              placeholder="Username"
-              {...register("userName", { required: true })}
-            />
-            {errors.userHandle && (
-              <span className="text-red-500 text-xs">
-                This field is required
-              </span>
-            )}
-          </div>
           <div className="flex items-center justify-center">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
-              onSubmit={handleSubmit(onSubmit)}
             >
               Sign up
             </button>

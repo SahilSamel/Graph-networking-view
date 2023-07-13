@@ -1,29 +1,38 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import GET from "@/api/GET/GET";
-import Detailsform from "@/components/Detailsform";
+import POST from "@/api/POST/POST"
+import { useSelector } from "react-redux";
 
 export default function Index() {
   const router = useRouter();
+  const userId = useSelector((state) => state.auth.userId);
 
   useEffect(() => {
     const checkAuth = () => {
       GET("/auth/checkLogin", function (err, data) {
         if (err) {
+          console.log(err);
           router.push("/auth");
         } else {
-            GET("/auth/dbCheck", function(err, data){
-                if(err){
-                    return <Detailsform />
-                } else {
-                    router.push("/home");
-                }
-            });
+          // const jsonData = JSON.stringify(userId);
+          // console.log(jsonData)
+          POST("/auth/dbCheck", userId, function (err, data) {
+            if (err) {
+              console.log(err);
+            } else {
+              if (data.status === 404) {
+                router.push("/register");
+              } else {
+                router.push("/home");
+              }
+            }
+          });
         }
       });
     };
 
     checkAuth();
-  }, []); 
-  return null; 
+  }, []);
+  return null;
 }
