@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import GET from "@/api/GET/GET";
-import POST from "@/api/POST/POST"
+import POST from "@/api/POST/POST";
 import { useSelector } from "react-redux";
 
 export default function Index() {
@@ -19,13 +19,9 @@ export default function Index() {
           // console.log(jsonData)
           POST("/auth/dbCheck", userId, function (err, data) {
             if (err) {
-              console.log(err);
+              router.push("/register");
             } else {
-              if (data.status === 404) {
-                router.push("/register");
-              } else {
-                router.push("/home");
-              }
+              router.push("/home");
             }
           });
         }
