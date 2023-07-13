@@ -2,6 +2,7 @@ import {
   createUser,
   registerUser,
   checkLogin,
+  assignCookies,
   signIn,
   uidDatabaseCheck,
 } from "../controller/authController.js";
@@ -25,6 +26,11 @@ router.post("/signin", (req, res) => {
 // Check if user already logged in
 router.get("/checkLogin", (req, res) => {
   checkLogin(req, res);
+});
+
+// Assign cookies
+router.get("/assignCookies", (req, res) => {
+  assignCookies(req, res);
 });
 
 // <-- End of USER AUTH FUNCTIONALITIES -->
