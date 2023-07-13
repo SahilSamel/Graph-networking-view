@@ -31,8 +31,7 @@ const Login = ({ toggleForm }: LoginProps) => {
       if (err) {
         setErrorMessage("The user with these credentials might not exist");
       } else {
-        const { uid, userHandle } = data;
-  
+        const { uid } = data;
         router.push("/");
       }
     });

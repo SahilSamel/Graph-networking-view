@@ -10,7 +10,6 @@ import dbConfig from "../connections/postgresConnection.js";
 import driver from "../connections/neo4j.js";
 import jwt from "jsonwebtoken";
 
-
 // <-- USER AUTH FUNCTIONS -->
 
 // Creating new User entry
@@ -21,9 +20,9 @@ const createUser = (req, res) => {
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
-      res.status(201).json({ token, uid });
+      req.userId = uid;
+      assignCookies(req, res);
     })
     .catch((error) => {
       res.status(409).json({ error: error.message });
@@ -39,15 +38,8 @@ const signIn = (req, res) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
-
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        })
-        .status(201)
-        .json({ token, uid });
+      req.userId = uid;
+      assignCookies(req, res);
     })
     .catch((error) => {
       res.status(401).json({ error: error.message });
@@ -57,11 +49,25 @@ const signIn = (req, res) => {
 // Check if user logged In
 const checkLogin = (req, res) => {
   if (req.cookies && req.cookies.token) {
-    res.sendStatus(200); 
+    res.sendStatus(200);
   } else {
     res.sendStatus(401);
   }
-}
+};
+
+// Check if user logged In
+const assignCookies = (req, res) => {
+  const { uid } = req.body;
+  const token = jwt.sign({ id: uid }, process.env.JWT_SECRET);
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    })
+    .status(201)
+    .json({ uid });
+};
 
 // <-- End of USER AUTH FUNCTIONS -->
 
@@ -103,31 +109,31 @@ const registerUser = async (req, res) => {
     education,
   } = req.body;
   const client = new Client(dbConfig);
-  
+
   try {
     await client.connect();
-    
+
     const session = driver.session();
     await session.run(
       "CREATE (:User {userId: $uid, userName: $userName, profImgURL: $profImgURL}) ",
       { uid, userName, profImgURL }
-      );
-      console.log("User saved successfully.");
-      
-      const query = "SELECT create_user($1, $2, $3, $4, $5, $6, $7, $8, $9)";
-      const values = [
-        `${uid}`,
-        `${profImgURL}`,
-        `${userName}`,
-        `${name}`,
-        `${email}`,
-        `${bio}`,
-        `${hobbies}`,
+    );
+    console.log("User saved successfully.");
+
+    const query = "SELECT create_user($1, $2, $3, $4, $5, $6, $7, $8, $9)";
+    const values = [
+      `${uid}`,
+      `${profImgURL}`,
+      `${userName}`,
+      `${name}`,
+      `${email}`,
+      `${bio}`,
+      `${hobbies}`,
       `${occupation}`,
       `${education}`,
     ];
     const result = await client.query(query, values);
-    
+
     console.log(result.rows[0].create_user);
   } catch (error) {
     console.error("An error occurred:", error.message);
@@ -154,4 +160,11 @@ const checkUserNameExists = async (userName) => {
 
 // <-- End of DATABASE FUNCTIONS -->
 
-export { createUser, registerUser, checkLogin, signIn, uidDatabaseCheck };
+export {
+  createUser,
+  registerUser,
+  checkLogin,
+  assignCookies,
+  signIn,
+  uidDatabaseCheck,
+};

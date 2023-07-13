@@ -22,6 +22,17 @@ export default function SignUp({ toggleForm }: SignUpProps) {
     formState: { errors },
   } = useForm<Inputs>();
 
+  const assignCookies = (uid:any) => {
+    const jsonData= JSON.stringify(uid);
+    POST("/auth/assignCookies", jsonData, function(err:any, data:any){
+      if(err){
+        console.log(err);
+      }else{
+        router.push("/");
+      }
+    });
+  }
+  
   const onSubmit: SubmitHandler<Inputs> = (data: any) => {
     const jsonData = JSON.stringify(data);
     POST("/auth/signup", jsonData, function (err: any, data: any) {
@@ -42,8 +53,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (credential === null) return;
-        const uid = result.user.uid;
-        router.push("/");
+        assignCookies(result.user.uid);
       })
       .catch((error) => {
         const errorCode = error.code;
