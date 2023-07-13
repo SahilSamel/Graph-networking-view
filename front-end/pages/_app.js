@@ -1,9 +1,35 @@
-import "../styles/globals.css";
 import Head from "next/head";
+import "../styles/globals.css";
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { PersistGate } from 'redux-persist/integration/react';
+import authReducer from '../state/authStates';
 
+const persistConfig = {
+  timeout: 500,
+  key: 'root',
+  storage,
+};
+
+const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+
+const store = configureStore({
+  reducer: {
+    auth: persistedAuthReducer
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
+
+export const persistor = persistStore(store);
 const MyApp = ({ Component, pageProps }) => {
   return (
-    <>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
       <Head>
         {/* <meta name="theme-color" content="#000000"></meta>
         <meta
@@ -29,8 +55,10 @@ const MyApp = ({ Component, pageProps }) => {
           href="https://firebasestorage.googleapis.com/v0/b/twitter-clone-ratio.appspot.com/o/twitter.svg?alt=media&token=7241168c-b6a7-469d-925a-4a5de0e7b5a2"
         ></link> */}
       </Head>
+      
       <Component {...pageProps} />
-    </>
+    </PersistGate>
+    </Provider>
   );
 };
 

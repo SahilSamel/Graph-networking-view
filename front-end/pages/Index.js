@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import GET from "@/api/GET/GET";
+import Detailsform from "@/components/Detailsform";
 
 export default function Index() {
   const router = useRouter();

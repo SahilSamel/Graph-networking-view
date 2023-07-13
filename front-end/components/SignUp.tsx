@@ -3,6 +3,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import POST from "@/api/POST/POST";
 import fapp from "@/connections/firebaseconfig";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { setUserId } from "@/state/authStates";
 type Inputs = {
   email: string;
   password: string;
@@ -22,6 +24,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
     formState: { errors },
   } = useForm<Inputs>();
 
+  const dispatch = useDispatch();
   const onSubmit: SubmitHandler<Inputs> = (data: any) => {
     const jsonData = JSON.stringify(data);
     POST("/auth/signup", jsonData, function (err: any, data: any) {
@@ -29,6 +32,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
         console.log(err);
       } else {
         const { uid } = data;
+        dispatch(setUserId(uid));
         router.push("/");
       }
     });
@@ -36,6 +40,16 @@ export default function SignUp({ toggleForm }: SignUpProps) {
 
   const provider = new GoogleAuthProvider();
 
+  const assignCookies = (uid:any) => {
+    const jsonData= JSON.stringify(uid);
+    POST("/auth/assignCookies", jsonData, function(err:any, data:any){
+      if(err){
+        console.log(err);
+      }else{
+        router.push("/");
+      }
+    });
+  }
   const handleGoogleSignIn = () => {
     const auth = getAuth(fapp);
     signInWithPopup(auth, provider)
@@ -43,7 +57,8 @@ export default function SignUp({ toggleForm }: SignUpProps) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (credential === null) return;
         const uid = result.user.uid;
-        router.push("/");
+        dispatch(setUserId(uid));
+        assignCookies(uid);
       })
       .catch((error) => {
         const errorCode = error.code;
