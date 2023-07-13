@@ -34,21 +34,6 @@ export default function SignUp({ toggleForm }: SignUpProps) {
     });
   };
 
-  const submitGoogleuid = (uid: string) => {
-    const jsonData = JSON.stringify({ uid: uid });
-    POST("/auth/google", jsonData, function (err: any, data: any) {
-      if (err) {
-        console.log(err);
-      } else {
-        if (data.result == true) {
-          console.log("user exists");
-        } else {
-          console.log("user does not exist");
-        }
-      }
-    });
-  };
-
   const provider = new GoogleAuthProvider();
 
   const handleGoogleSignIn = () => {
@@ -58,7 +43,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (credential === null) return;
         const uid = result.user.uid;
-        submitGoogleuid(uid);
+        router.push("/");
       })
       .catch((error) => {
         const errorCode = error.code;
