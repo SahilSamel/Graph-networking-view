@@ -75,7 +75,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
     <div className="flex justify-center items-center h-screen bg-zinc-900	">
       <div className="rounded-lg shadow-lg p-6 bg-black	">
         <h1 className="text-3xl font-bold mb-6 text-slate-200	 text-center ">
-          Sign up for Twitter
+          Sign up
         </h1>
         <form className="w-full max-w-sm mx-auto flex flex-col "
         onSubmit={handleSubmit(onSubmit)}>

@@ -76,16 +76,16 @@ const assignCookies = (req, res) => {
 
 // Database check for user information
 const uidDatabaseCheck = async (req, res) => {
-  console.log("Rane gae")
   const { userId } = req.body;
   const client = new Client(dbConfig);
   try {
     await client.connect();
     const query = "SELECT check_uid_exists($1)";
-    const values = [uid];
+    const values = [userId];
     const result = await client.query(query, values);
     if (result.rows[0].check_uid_exists) {
       res.status(200).json({ status: "OK" });
+      console.log("User information found");
     } else {
       res.status(404).json({ error: "User information not found" });
     }
@@ -114,7 +114,7 @@ const registerUser = async (req, res) => {
 
   try {
     await client.connect();
-
+    console.log(uid, userName, profImgURL);
     const session = driver.session();
     await session.run(
       "CREATE (:User {userId: $uid, userName: $userName, profImgURL: $profImgURL}) ",

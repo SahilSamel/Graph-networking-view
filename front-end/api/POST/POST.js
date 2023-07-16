@@ -7,6 +7,8 @@ const post = async (endpoint,data,func) => {
       const response = await axios.post(serverUrl + endpoint, data, {
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': 'http://localhost:3000',
         },
         withCredentials: true
       });

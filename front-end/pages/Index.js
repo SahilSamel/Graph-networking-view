@@ -15,10 +15,13 @@ export default function Index() {
           console.log(err);
           router.push("/auth");
         } else {
-          // const jsonData = JSON.stringify(userId);
-          // console.log(jsonData)
-          POST("/auth/dbCheck", userId, function (err, data) {
+          const jsonData = JSON.stringify({ userId: userId });
+          console.log(jsonData)
+          
+          
+          POST("/auth/dbCheck", jsonData, function (err, data) {
             if (err) {
+              console.log(err.message);
               router.push("/register");
             } else {
               router.push("/home");

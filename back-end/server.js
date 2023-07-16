@@ -9,6 +9,10 @@ import fapp from "./connections/firebaseconfig.js"
 const app = express();
 // <-- End of Connections import -->
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 // <-- Route Imports -->
 import authRouter from "./routes/authRoutes.js"
 import profileRouter from "./routes/profileRoutes.js"
@@ -18,10 +22,7 @@ import graphRouter from "./routes/graphRoutes.js"
 // <-- Middleware -->
 app.use(express.json());
 app.use(helmet());
-app.use(cors({
-  origin: 'http://localhost:3000', // Allow all origins
-  credentials: true, // Allow credentials (cookies) to be included``
-}));
+
 
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(bodyParser.json());
