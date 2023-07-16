@@ -28,7 +28,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
   const dispatch = useDispatch();
 
   const onSubmit: SubmitHandler<Inputs> = (data: any) => {
-    console.log(data)
+    console.log(data);
     const jsonData = JSON.stringify(data);
     POST("/auth/signup", jsonData, function (err: any, data: any) {
       if (err) {
@@ -43,16 +43,16 @@ export default function SignUp({ toggleForm }: SignUpProps) {
 
   const provider = new GoogleAuthProvider();
 
-  const assignCookies = (uid:any) => {
-    const jsonData= JSON.stringify(uid);
-    POST("/auth/assignCookies", jsonData, function(err:any, data:any){
-      if(err){
+  const assignCookies = (uid: any) => {
+    const jsonData = JSON.stringify(uid);
+    POST("/auth/assignCookies", jsonData, function (err: any, data: any) {
+      if (err) {
         console.log(err);
-      }else{
+      } else {
         router.push("/");
       }
     });
-  }
+  };
   const handleGoogleSignIn = () => {
     const auth = getAuth(fapp);
     signInWithPopup(auth, provider)
@@ -77,8 +77,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
         <h1 className="text-3xl font-bold mb-6 text-slate-200	 text-center ">
           Sign up
         </h1>
-        <form className="w-full max-w-sm mx-auto flex flex-col "
-        onSubmit={handleSubmit(onSubmit)}>
+        <form className="w-full max-w-sm mx-auto flex flex-col ">
           <div className="mb-4">
             <label
               className="block text-slate-200	 text-sm font-bold mb-2"
@@ -121,6 +120,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
+              onClick={handleSubmit(onSubmit)}
             >
               Sign up
             </button>
@@ -134,14 +134,14 @@ export default function SignUp({ toggleForm }: SignUpProps) {
               Already have an account? Log in
             </button>
           </div>
+          <button
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+            onClick={handleGoogleSignIn}
+          >
+            Google
+          </button>
         </form>
-        <button
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="submit"
-          onClick={handleGoogleSignIn}
-        >
-          Google
-        </button>
       </div>
     </div>
   );

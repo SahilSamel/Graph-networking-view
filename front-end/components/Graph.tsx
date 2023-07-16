@@ -18,18 +18,17 @@ const Graph: React.FC = () => {
         console.log(err,"Error");
       } else{
         setGraphData(data);
-        setLoggedInUserId('2mN311Kc9NMmMSv7bNgubaQ0YwJ3');
+        setLoggedInUserId('2hrn2G4f6gTnGYeg5v5MCzgzCQ32');
       }
     });
   }, []);
     
   useEffect(() => {
     if (graphData && loggedInUserId) {
-      // Generate the graph using Vis.js
       const container = document.getElementById('graph');
       const nodes = graphData.nodes.map((node: Node) => {
         if (node.id === loggedInUserId) {
-          return { ...node, color: '#FF0000', borderWidth: 3 }; // Customize UI for the logged-in user
+          return { ...node, color: '#FF0000', borderWidth: 3 };
         } else {
           return node;
         }
@@ -46,9 +45,8 @@ const Graph: React.FC = () => {
       };
       const network = new Network(container!, data, options);
 
-      // Center the logged-in user's node
       network.focus(loggedInUserId, {
-        scale: 1.5, // Adjust the scale if needed
+        scale: 1.5, 
         animation: {
           duration: 1000,
           easingFunction: 'easeInOutQuart',
