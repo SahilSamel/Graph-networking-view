@@ -17,6 +17,7 @@ app.use(cors({
 import authRouter from "./routes/authRoutes.js"
 import profileRouter from "./routes/profileRoutes.js"
 import graphRouter from "./routes/graphRoutes.js"
+import commRouter from "./routes/commRoutes.js"
 // <-- End of Route Imports -->
 
 // <-- Middleware -->
@@ -34,6 +35,7 @@ app.use(cookieParser());
 app.use("/auth",authRouter);
 app.use("/profile",profileRouter);
 app.use("/graph",graphRouter);
+app.use("/comm",commRouter);
 // <-- End of Routes -->
 
 

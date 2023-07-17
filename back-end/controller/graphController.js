@@ -6,43 +6,79 @@ import driver from "../connections/neo4j.js";
 const fetchGraph = (req, res) => {
   const session = driver.session();
   const query = `
-  MATCH (n)-[r]->(m)
-  RETURN n.userId AS source, m.userId AS target, n.userName AS sourceUsername, m.userName AS targetUsername, n.profImgURL AS sourceProfileImage, m.profImgURL AS targetProfileImage
+    MATCH (n)-[r]-(m)
+    WHERE id(n) < id(m)
+    RETURN 
+      n {.*, labels: labels(n)} AS source, 
+      r AS edge, 
+      m {.*, labels: labels(m)} AS target
   `;
 
   session
     .run(query)
     .then((result) => {
+      const nodesSet = new Set(); // To store unique node IDs
       const nodes = [];
       const edges = [];
 
       result.records.forEach((record) => {
-        const sourceId = record.get("source");
-        const targetId = record.get("target");
-        const sourceUsername = record.get("sourceUsername");
-        const targetUsername = record.get("targetUsername");
-        const sourceProfileImage = record.get("sourceProfileImage");
-        const targetProfileImage = record.get("targetProfileImage");
+        const source = record.get("source");
+        const edge = record.get("edge");
+        const target = record.get("target");
 
-        nodes.push({
+        let sourceId, sourceLabel, sourceImage;
+        let targetId, targetLabel, targetImage;
+
+        if (source.labels.includes("User")) {
+          sourceId = "User_" + source.userId;
+          sourceLabel = source.userName;
+          sourceImage = source.profImgURL;
+        } else if (source.labels.includes("Community")) {
+          sourceId = "Community_" + source.commName;
+          sourceLabel = source.commName;
+          sourceImage = source.profImgURL;
+        }
+
+        if (target.labels.includes("User")) {
+          targetId = "User_" + target.userId;
+          targetLabel = target.userName;
+          targetImage = target.profImgURL;
+        } else if (target.labels.includes("Community")) {
+          targetId = "Community_" + target.commName;
+          targetLabel = target.commName;
+          targetImage = target.profImgURL;
+        }
+
+        const sourceNode = {
           id: sourceId,
-          label: sourceUsername,
-          image: sourceProfileImage,
+          label: sourceLabel,
+          image: sourceImage,
           shape: "circularImage",
-          title: sourceUsername,
-        });
+          title: sourceLabel,
+        };
 
-        nodes.push({
+        const targetNode = {
           id: targetId,
-          label: targetUsername,
-          image: targetProfileImage,
+          label: targetLabel,
+          image: targetImage,
           shape: "circularImage",
-          title: targetUsername,
-        });
+          title: targetLabel,
+        };
+
+        if (!nodesSet.has(sourceId)) {
+          nodes.push(sourceNode);
+          nodesSet.add(sourceId);
+        }
+
+        if (!nodesSet.has(targetId)) {
+          nodes.push(targetNode);
+          nodesSet.add(targetId);
+        }
 
         edges.push({
           from: sourceId,
           to: targetId,
+          label: edge.type,
         });
       });
 
@@ -57,6 +93,9 @@ const fetchGraph = (req, res) => {
       session.close();
     });
 };
+
+// Make connection
+
 
 // <-- End of GRAPH FUNCTIONALITIES -->
 export { fetchGraph };
