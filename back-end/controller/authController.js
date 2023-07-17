@@ -108,7 +108,7 @@ const registerUser = async (req, res) => {
     bio,
     hobbies,
     occupation,
-    education,
+    education
   } = req.body;
   const client = new Client(dbConfig);
 
