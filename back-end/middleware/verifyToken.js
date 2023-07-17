@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const verifyToken = (req, res, next) => {
   try {
-    let {token} = req.cookies;
+    let { token } = req.cookies;
 
     if (!token) {
       return res.status(403).send("Access Denied");
@@ -20,4 +20,4 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-export default verifyToken
+export default verifyToken;
