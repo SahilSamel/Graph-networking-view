@@ -110,12 +110,14 @@ const registerUser = async (req, res) => {
     occupation,
     education,
   } = req.body;
+
   const client = new Client(dbConfig);
+  const session = driver.session(); // Declare session here
 
   try {
     await client.connect();
     console.log(uid, userName, profImgURL);
-    const session = driver.session();
+
     await session.run(
       "CREATE (:User {userId: $uid, userName: $userName, profImgURL: $profImgURL}) ",
       { uid, userName, profImgURL }
@@ -140,6 +142,7 @@ const registerUser = async (req, res) => {
   } catch (error) {
     console.error("An error occurred:", error.message);
   } finally {
+    await session.close(); // Close the session inside the finally block
     client.end();
   }
 };
