@@ -95,7 +95,39 @@ const fetchGraph = (req, res) => {
 };
 
 // Make connection
+const makeConnection = async (req, res) => {
+  const userId = req.userId.id;
+  const { n_userId, n_commName } = req.body;
 
+  const session = driver.session();
+
+  try {
+    if (n_userId) {
+      const query = `
+        MATCH (u:User {userId: $userId})
+        MATCH (n:User {userId: $n_userId})
+        CREATE (u)-[:CONNECTED]->(n)
+      `;
+      await session.run(query, { userId, n_userId });
+    }
+
+    if (n_commName) {
+      const query = `
+        MATCH (u:User {userId: $userId})
+        MATCH (n:Community {commName: $n_commName})
+        CREATE (u)-[:Member_Of]->(n)
+      `;
+      await session.run(query, { userId, n_commName });
+    }
+
+    res.status(200).json({ message: "Connections made successfully" });
+  } catch (error) {
+    console.error("Error creating connections:", error.message);
+    res.status(500).json({ error: "Error creating connections" });
+  } finally {
+    session.close();
+  }
+};
 
 // <-- End of GRAPH FUNCTIONALITIES -->
 export { fetchGraph };
