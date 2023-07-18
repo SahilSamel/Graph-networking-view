@@ -2,16 +2,18 @@ import driver from "../connections/neo4j.js";
 
 // <-- GRAPH FUNCTIONALITIES -->
 
+// <-- FETCH USER RELATED INFORMATION -->
+
 // Fetching the user specific graph
 const fetchGraph = (req, res) => {
   const session = driver.session();
   const query = `
-    MATCH (n)-[r]-(m)
-    WHERE id(n) < id(m)
-    RETURN 
-      n {.*, labels: labels(n)} AS source, 
-      r AS edge, 
-      m {.*, labels: labels(m)} AS target
+  MATCH (n)-[r]-(m)
+  WHERE id(n) < id(m)
+  RETURN 
+  n {.*, labels: labels(n)} AS source, 
+  r AS edge, 
+  m {.*, labels: labels(m)} AS target
   `;
 
   session
@@ -94,6 +96,40 @@ const fetchGraph = (req, res) => {
     });
 };
 
+// Fetch user connections informations
+const getConnections = async (req, res) => {
+  const userId = req.userId.id;
+  const session = driver.session();
+
+  try {
+    const connectedQuery = `
+      MATCH (u:User {userId: $userId})-[:CONNECTED]->(n:User)
+      RETURN COUNT(*) as connectedCount`;
+    const connectedResult = await session.run(connectedQuery, { userId });
+    const connectedCount = connectedResult.records[0]
+      .get("connectedCount")
+      .toNumber();
+
+    const memberOfQuery = `
+      MATCH (u:User {userId: $userId})-[:Member_Of]->(n:Community)
+      RETURN COUNT(*) as memberOfCount
+    `;
+    const memberOfResult = await session.run(memberOfQuery, { userId });
+    const memberOfCount = memberOfResult.records[0]
+      .get("memberOfCount")
+      .toNumber();
+
+    res.status(200).json({ connectedCount, memberOfCount });
+  } catch (error) {
+    console.error("Error fetching connections:", error.message);
+    res.status(500).json({ error: "Error fetching connections" });
+  } finally {
+    session.close();
+  }
+};
+
+// <-- End of FETCH USER RELATED INFORMATION -->
+
 // Make connection
 const makeConnection = async (req, res) => {
   const userId = req.userId.id;
@@ -104,12 +140,12 @@ const makeConnection = async (req, res) => {
   try {
     if (n_userId) {
       const checkQuery = `
-        MATCH (u:User {userId: $userId})-[:CONNECTED]-(n:User {userId: $n_userId})
-        RETURN COUNT(*) as count
+      MATCH (u:User {userId: $userId})-[:CONNECTED]-(n:User {userId: $n_userId})
+      RETURN COUNT(*) as count
       `;
       const result = await session.run(checkQuery, { userId, n_userId });
-      const count = result.records[0].get('count').toNumber();
-      
+      const count = result.records[0].get("count").toNumber();
+
       if (count === 0) {
         const createQuery = `
           MATCH (u:User {userId: $userId})
@@ -126,8 +162,8 @@ const makeConnection = async (req, res) => {
         RETURN COUNT(*) as count
       `;
       const result = await session.run(checkQuery, { userId, n_commName });
-      const count = result.records[0].get('count').toNumber();
-      
+      const count = result.records[0].get("count").toNumber();
+
       if (count === 0) {
         const createQuery = `
           MATCH (u:User {userId: $userId})
@@ -161,7 +197,7 @@ const deleteConnection = async (req, res) => {
         RETURN COUNT(*) as count
       `;
       const result = await session.run(checkQuery, { userId, n_userId });
-      const count = result.records[0].get('count').toNumber();
+      const count = result.records[0].get("count").toNumber();
 
       if (count > 0) {
         const deleteQuery = `
@@ -178,7 +214,7 @@ const deleteConnection = async (req, res) => {
         RETURN COUNT(*) as count
       `;
       const result = await session.run(checkQuery, { userId, n_commName });
-      const count = result.records[0].get('count').toNumber();
+      const count = result.records[0].get("count").toNumber();
 
       if (count > 0) {
         const deleteQuery = `
@@ -198,6 +234,5 @@ const deleteConnection = async (req, res) => {
   }
 };
 
-
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph, makeConnection, deleteConnection };
+export { fetchGraph, getConnections, makeConnection, deleteConnection };
