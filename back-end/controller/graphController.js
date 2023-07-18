@@ -103,21 +103,39 @@ const makeConnection = async (req, res) => {
 
   try {
     if (n_userId) {
-      const query = `
-        MATCH (u:User {userId: $userId})
-        MATCH (n:User {userId: $n_userId})
-        CREATE (u)-[:CONNECTED]->(n)
+      const checkQuery = `
+        MATCH (u:User {userId: $userId})-[:CONNECTED]-(n:User {userId: $n_userId})
+        RETURN COUNT(*) as count
       `;
-      await session.run(query, { userId, n_userId });
+      const result = await session.run(checkQuery, { userId, n_userId });
+      const count = result.records[0].get('count').toNumber();
+      
+      if (count === 0) {
+        const createQuery = `
+          MATCH (u:User {userId: $userId})
+          MATCH (n:User {userId: $n_userId})
+          CREATE (u)-[:CONNECTED]->(n)
+        `;
+        await session.run(createQuery, { userId, n_userId });
+      }
     }
 
     if (n_commName) {
-      const query = `
-        MATCH (u:User {userId: $userId})
-        MATCH (n:Community {commName: $n_commName})
-        CREATE (u)-[:Member_Of]->(n)
+      const checkQuery = `
+        MATCH (u:User {userId: $userId})-[:Member_Of]-(n:Community {commName: $n_commName})
+        RETURN COUNT(*) as count
       `;
-      await session.run(query, { userId, n_commName });
+      const result = await session.run(checkQuery, { userId, n_commName });
+      const count = result.records[0].get('count').toNumber();
+      
+      if (count === 0) {
+        const createQuery = `
+          MATCH (u:User {userId: $userId})
+          MATCH (n:Community {commName: $n_commName})
+          CREATE (u)-[:Member_Of]->(n)
+        `;
+        await session.run(createQuery, { userId, n_commName });
+      }
     }
 
     res.status(200).json({ message: "Connections made successfully" });
@@ -129,5 +147,57 @@ const makeConnection = async (req, res) => {
   }
 };
 
+//Delete Connection
+const deleteConnection = async (req, res) => {
+  const userId = req.userId.id;
+  const { n_userId, n_commName } = req.body;
+
+  const session = driver.session();
+
+  try {
+    if (n_userId) {
+      const checkQuery = `
+        MATCH (u:User {userId: $userId})-[r:CONNECTED]->(n:User {userId: $n_userId})
+        RETURN COUNT(*) as count
+      `;
+      const result = await session.run(checkQuery, { userId, n_userId });
+      const count = result.records[0].get('count').toNumber();
+
+      if (count > 0) {
+        const deleteQuery = `
+          MATCH (u:User {userId: $userId})-[r:CONNECTED]->(n:User {userId: $n_userId})
+          DELETE r
+        `;
+        await session.run(deleteQuery, { userId, n_userId });
+      }
+    }
+
+    if (n_commName) {
+      const checkQuery = `
+        MATCH (u:User {userId: $userId})-[r:Member_Of]->(n:Community {commName: $n_commName})
+        RETURN COUNT(*) as count
+      `;
+      const result = await session.run(checkQuery, { userId, n_commName });
+      const count = result.records[0].get('count').toNumber();
+
+      if (count > 0) {
+        const deleteQuery = `
+          MATCH (u:User {userId: $userId})-[r:Member_Of]->(n:Community {commName: $n_commName})
+          DELETE r
+        `;
+        await session.run(deleteQuery, { userId, n_commName });
+      }
+    }
+
+    res.status(200).json({ message: "Connections deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting connections:", error.message);
+    res.status(500).json({ error: "Error deleting connections" });
+  } finally {
+    session.close();
+  }
+};
+
+
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph,makeConnection };
+export { fetchGraph, makeConnection, deleteConnection };
