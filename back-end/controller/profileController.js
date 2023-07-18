@@ -6,7 +6,7 @@ import driver from "../connections/neo4j.js";
 
 // Get user profile
 const getProfile = async (req, res) => {
-  const userId = req.body.uid;
+  const userId = req.userId.id;
   const client = new Client(dbConfig);
 
   try {

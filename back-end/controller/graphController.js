@@ -130,4 +130,4 @@ const makeConnection = async (req, res) => {
 };
 
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph };
+export { fetchGraph,makeConnection };
