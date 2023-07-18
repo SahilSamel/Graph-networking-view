@@ -129,5 +129,31 @@ const makeConnection = async (req, res) => {
   }
 };
 
+// Search user
+const searchUser = async (req, res) => {
+  const searchQuery = req.query.query;
+  const session = driver.session();
+  const query = `
+  MATCH (user:User)
+  WHERE user.userName CONTAINS $searchQuery
+  RETURN user
+  `;
+  const values = {searchQuery};
+  await session
+    .run(query, values)
+    .then((result) => {
+   
+      const users = result.records.map((record) => record.get('user').properties);
+      res.json(users);
+    })
+    .catch((error) => {
+      console.error('Error executing Neo4j query', error);
+      res.status(500).json({ error: 'An error occurred while searching for users' });
+    })
+    .finally(() => {
+      session.close();
+    });
+};
+
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph,makeConnection };
+export { fetchGraph,makeConnection,searchUser };
