@@ -2,6 +2,7 @@ import pkg from "pg";
 const { Client } = pkg;
 import dbConfig from "../connections/postgresConnection.js";
 import driver from "../connections/neo4j.js";
+
 // <-- USER PROFILE FUNCTIONALITIES -->
 
 // Get user profile
@@ -24,6 +25,41 @@ const getProfile = async (req, res) => {
     res.status(500).json({ error: "Error retrieving profile" });
   } finally {
     client.end();
+  }
+};
+
+// Check if there is a relation
+const getIfConnected = async (req, res) => {
+  const userId = req.userId.id;
+  const { n_commName, n_userId } = req.body;
+
+  const session = driver.session();
+
+  try {
+    if (n_commName) {
+      const query = `
+        MATCH (u:User {userId: $userId})-[:Member_Of]-(c:Community {commName: $n_commName})
+        RETURN COUNT(*) AS count
+      `;
+      const result = await session.run(query, { userId, n_commName });
+      const count = result.records[0].get('count').toNumber();
+      res.status(200).json({ isConnected: count > 0 });
+    } else if (n_userId) {
+      const query = `
+        MATCH (u1:User {userId: $userId})-[r:CONNECTED]-(u2:User {userId: $n_userId})
+        RETURN COUNT(*) AS count
+      `;
+      const result = await session.run(query, { userId, n_userId });
+      const count = result.records[0].get('count').toNumber();
+      res.status(200).json({ isConnected: count > 0 });
+    } else {
+      res.status(400).json({ error: "Invalid request parameters" });
+    }
+  } catch (error) {
+    console.error("Error checking connection:", error.message);
+    res.status(500).json({ error: "Error checking connection" });
+  } finally {
+    session.close();
   }
 };
 
@@ -81,4 +117,4 @@ const editProfile = async (req, res) => {
 };
 
 
-export { getProfile,editProfile };
+export { getProfile, getIfConnected, editProfile };
