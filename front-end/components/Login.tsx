@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";;
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import POST from "@/api/POST/POST";
+import { setUserId } from "@/state/authStates";
 
 type Inputs = {
   email: string;
@@ -14,7 +16,8 @@ type LoginProps = {
 
 const Login = ({ toggleForm }: LoginProps) => {
   const router = useRouter();
- 
+  const dispatch = useDispatch();
+
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isEmailValid, setIsEmailValid] = useState<boolean>(false);
 
@@ -31,6 +34,7 @@ const Login = ({ toggleForm }: LoginProps) => {
         setErrorMessage("The user with these credentials might not exist");
       } else {
         const { uid } = data;
+        dispatch(setUserId(uid));
         router.push("/");
       }
     });
