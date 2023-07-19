@@ -1,5 +1,5 @@
 import express from "express"
-import { fetchGraph, getConnections, makeConnection, deleteConnection } from "../controller/graphController.js";
+import { fetchGraph, getConnections, makeConnection, deleteConnection , rejectRequest,sendRequest} from "../controller/graphController.js";
 import verifyToken from "../middleware/verifyToken.js"
 const router = express.Router();
 
@@ -28,6 +28,15 @@ router.post("/makeConnection", verifyToken, (req,res)=>{
 router.post("/deleteConnection", verifyToken, (req,res)=>{
     deleteConnection(req,res);
 });
+
+router.post("/rejectRequest",verifyToken,(req,res)=>{
+    rejectRequest(req,res);
+});
+
+
+router.post("/sendRequest",verifyToken,(req,res)=>{
+    sendRequest(req,res);
+})
 // <-- End of CONNECTION FUNCTIONALITIES -->
 
 export default router;
