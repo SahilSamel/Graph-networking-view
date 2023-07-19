@@ -53,8 +53,13 @@ io.on("connection", (socket) => {
   }
 
   socket.on("sendMessage", (data) => {
-    socket.broadcast.emit("receiveMessage", data)
-  })
+    const { receiverUserId } = data;
+    const receiverSocketId = userSocketMap[receiverUserId];
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receiveMessage", { message: data.message });
+    }
+  });
 })
 
 // Connection to port
