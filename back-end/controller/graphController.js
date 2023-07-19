@@ -130,6 +130,54 @@ const getConnections = async (req, res) => {
 
 // <-- End of FETCH USER RELATED INFORMATION -->
 
+
+const rejectRequest = async (req, res) => {
+  const userId = req.userId.id;
+  const { rejectReqFrom } = req.body;
+  const client = new Client(dbConfig);
+  try {
+    await client.connect();
+    const query = "SELECT reject_request($1,$2)";
+    const values = [userId,rejectReqFrom];
+    const result = await client.query(query, values);
+    if (result.rows[0].reject_request) {
+      res.status(200).json({ status: "OK" });
+      console.log("Request rejected successfully");
+    }
+    else {
+      res.status(404).json({ error: "Request not rejected" });
+    }
+  }
+  catch (error) {
+    console.error("An error occurred:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const sendRequest = async (req, res) => {
+  const userId = req.userId.id;
+  const { sendReqTo } = req.body;
+  const client = new Client(dbConfig);
+  try {
+    await client.connect();
+    const query = "SELECT send_request($1,$2)";
+    const values = [userId,sendReqTo];
+    const result = await client.query(query, values);
+    if (result.rows[0].send_request) {
+      res.status(200).json({ status: "OK" });
+      console.log("Request sent successfully");
+    } else {
+      res.status(404).json({ error: "Request not sent" });
+    }
+  }
+  catch (error) {
+    console.error("An error occurred:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+  
+};
+
+
 // Make connection
 const makeConnection = async (req, res) => {
   const userId = req.userId.id;
@@ -243,22 +291,41 @@ const searchUser = async (req, res) => {
   WHERE user.userName CONTAINS $searchQuery
   RETURN user
   `;
-  const values = {searchQuery};
-  await session
+  const query2 = `
+    MATCH (community:Community)
+    WHERE community.commName CONTAINS $searchQuery
+    RETURN community
+  `;
+  
+  const values = { searchQuery };
+    await session
     .run(query, values)
     .then((result) => {
-   
+  
       const users = result.records.map((record) => record.get('user').properties);
-      res.json(users);
-    })
-    .catch((error) => {
+      // res.json(users);
+      return session.run(query2, values)
+      .then((result2) => {
+        console.log(result2);
+        const committees = result2.records.map((record) => record.get('community').properties);
+
+        const searchResult = users.concat(committees);
+        res.json(searchResult);
+      })
+      .catch((error) => {
+        console.error('Error executing Neo4j query', error);
+        res.status(500).json({ error: 'An error occurred while searching for committees' });
+      });
+    }).catch((error) => {
       console.error('Error executing Neo4j query', error);
       res.status(500).json({ error: 'An error occurred while searching for users' });
-    })
-    .finally(() => {
+    }).finally(() => {
       session.close();
     });
+
+    
+
 };
 
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph, getConnections, makeConnection, deleteConnection,searchUser };
+export { fetchGraph, getConnections, makeConnection, deleteConnection,searchUser,rejectRequest,sendRequest };
