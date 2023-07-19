@@ -15,7 +15,7 @@ const createCommunity = async (req, res) => {
 
     await session.run(
       "MATCH (u:User {userId: $userId}), (c:Community {commName: $commName}) " +
-      "CREATE (u)-[:Member_Of]->(c)",
+        "CREATE (u)-[:Member_Of]->(c)",
       { userId, commName }
     );
 
@@ -28,4 +28,43 @@ const createCommunity = async (req, res) => {
   }
 };
 
-export { createCommunity };
+// Edit Community
+const editCommunity = async (req, res) => {
+  const { commName, n_commName, n_commProfileImage, n_commBio } = req.body;
+
+  const session = driver.session();
+
+  try {
+    const findCommunityQuery = `
+      MATCH (c:Community {commName: $commName})
+      RETURN c
+    `;
+    const result = await session.run(findCommunityQuery, { commName });
+    const communityNode = result.records[0]?.get('c');
+
+    if (communityNode) {
+      const updateQuery = `
+        MATCH (c:Community {commName: $commName})
+        SET c.commName = $n_commName, c.profImgURL = $n_commProfileImage, c.commBio = $n_commBio
+      `;
+      await session.run(updateQuery, {
+        commName,
+        n_commName,
+        n_commProfileImage,
+        n_commBio,
+      });
+
+      res.status(200).json({ message: "Community edited successfully" });
+    } else {
+      res.status(404).json({ error: "Community not found" });
+    }
+  } catch (error) {
+    console.error("Error editing community:", error.message);
+    res.status(500).json({ error: "Error editing community" });
+  } finally {
+    session.close();
+  }
+};
+
+
+export { createCommunity, editCommunity };

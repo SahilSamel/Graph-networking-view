@@ -136,7 +136,10 @@ const registerUser = async (req, res) => {
       `${occupation}`,
       `${education}`,
     ];
-    const result = await client.query(query, values);
+    const result = await client.query(query, values).then((result) => {
+
+      res.status(201).json({ status: "OK" });
+    });
 
     console.log(result.rows[0].create_user);
   } catch (error) {

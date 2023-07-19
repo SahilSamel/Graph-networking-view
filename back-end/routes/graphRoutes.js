@@ -1,29 +1,42 @@
 import express from "express"
-import { fetchGraph,makeConnection, searchUser, rejectRequest,sendRequest} from "../controller/graphController.js";
-
-import verifyToken from "../middleware/verifyToken.js";
+import { fetchGraph, getConnections, makeConnection, deleteConnection , rejectRequest,sendRequest} from "../controller/graphController.js";
+import verifyToken from "../middleware/verifyToken.js"
 const router = express.Router();
 
-router.get("/fetchGraph",verifyToken,(req,res)=>{
+// <-- FETCH FUNCTIONALITIES -->
+
+// Fetch Graph
+router.get("/fetchGraph",(req,res)=>{
     fetchGraph(req,res);
 });
 
-router.post("/makeConnection",verifyToken,(req,res)=>{
+// Fetch Connections 
+router.get("/fetchConnections", verifyToken, (req, res) => {
+    getConnections(req, res);
+});
+
+// <-- End of FETCH FUNCTIONALITIES -->
+
+// <-- CONNECTION FUNCTIONALITIES -->
+
+// Make Connection 
+router.post("/makeConnection", verifyToken, (req,res)=>{
     makeConnection(req,res);
 });
 
-router.get("/searchUser",verifyToken,(req,res)=>{
-    searchUser(req,res);
+// Delete connection/Leave Community 
+router.post("/deleteConnection", verifyToken, (req,res)=>{
+    deleteConnection(req,res);
 });
-
-
 
 router.post("/rejectRequest",verifyToken,(req,res)=>{
     rejectRequest(req,res);
 });
 
+
 router.post("/sendRequest",verifyToken,(req,res)=>{
     sendRequest(req,res);
 })
+// <-- End of CONNECTION FUNCTIONALITIES -->
 
 export default router;
