@@ -1,35 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client'; // Import the Socket type
 
-const Message = () => {
+const Message: React.FC = () => {
   const userId = useSelector((state: any) => state.auth.userId);
 
-  const socket = io("http://localhost:4200", {
-    query: {
-      customId: userId,
-    },
-  });
-
+  const [socket, setSocket] = useState<Socket | null>(null); // Use the Socket type
   const [message, setMessage] = useState("");
   const [receivedMessage, setReceivedMessage] = useState("");
-  const [receiverUserId, setReceiverUserId] = useState(""); // State variable to hold the receiver's user ID
+  const [receiverUserId, setReceiverUserId] = useState("");
+
+  useEffect(() => {
+    // Create the socket connection only once during the component's lifecycle
+    const newSocket = io("http://localhost:4200", {
+      query: {
+        customId: userId,
+      },
+    });
+
+    setSocket(newSocket);
+
+    // Clean up the socket connection when the component unmounts
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [userId]);
 
   const sendMessage = () => {
-    if (message.trim() !== "" && receiverUserId.trim() !== "") {
+    if (message.trim() !== "" && receiverUserId.trim() !== "" && socket) {
       socket.emit("sendMessage", { message, receiverUserId });
       setMessage(""); // Clear the input field after sending the message
     }
   };
 
   useEffect(() => {
-    socket.on("receiveMessage", (data) => {
-      setReceivedMessage(data.message); // Update the receivedMessage state with the new message
-    });
+    if (socket) {
+      socket.on("receiveMessage", (data: { message: string }) => {
+        setReceivedMessage(data.message);
+      });
+    }
 
     // Clean up the event listener when the component unmounts
     return () => {
-      socket.off("receiveMessage");
+      if (socket) {
+        socket.off("receiveMessage");
+      }
     };
   }, [socket]);
 
