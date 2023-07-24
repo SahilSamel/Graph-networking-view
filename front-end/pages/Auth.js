@@ -4,7 +4,7 @@ import SignUp from "@/components/SignUp";
 import { useState } from "react";
 
 const auth = () => {
-  const [isLogin, setMode] = useState(false);
+  const [isLogin, setMode] = useState(true);
 
   const toggleForm = () => {
     setMode(!isLogin);
