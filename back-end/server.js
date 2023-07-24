@@ -21,6 +21,7 @@ import authRouter from "./routes/authRoutes.js"
 import profileRouter from "./routes/profileRoutes.js"
 import graphRouter from "./routes/graphRoutes.js"
 import commRouter from "./routes/commRoutes.js"
+import chatRouter from "./routes/chatRoutes.js"
 // <-- End of Route Imports -->
 
 // <-- Middleware -->
@@ -37,30 +38,9 @@ app.use("/auth",authRouter);
 app.use("/profile",profileRouter);
 app.use("/graph",graphRouter);
 app.use("/comm",commRouter);
+app.use("/chat",chatRouter);
 // <-- End of Routes -->
 
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  const customId = socket.handshake.query.customId;
-  if (customId) {
-    socket.id = customId;
-  }
-
-  socket.on("sendMessage", (data) => {
-    const { receiverUserId } = data;
-    const receiverSocketId = userSocketMap[receiverUserId];
-
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("receiveMessage", { message: data.message });
-    }
-  });
-})
 
 // Connection to port
 const PORT = process.env.PORT || 4200;

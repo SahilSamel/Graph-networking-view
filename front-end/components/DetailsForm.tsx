@@ -5,6 +5,7 @@ import POST from "@/api/POST/POST";
 import { useSelector } from "react-redux";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import fapp from "@/connections/firebaseconfig";
+import { getFirestore, collection, addDoc, setDoc, doc } from "firebase/firestore";
 import { resolve } from "path";
 
 const DetailsForm = () => {
@@ -60,7 +61,11 @@ const DetailsForm = () => {
       } else {
         router.push("/home");
       }
-    });
+    })
+   
+
+
+    
   };
 
   const {

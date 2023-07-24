@@ -38,7 +38,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
         dispatch(setUserId(uid));
         router.push("/");
       }
-    });
+    })
   };
 
   const provider = new GoogleAuthProvider();

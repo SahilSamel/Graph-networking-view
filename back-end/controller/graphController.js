@@ -130,6 +130,25 @@ const getConnections = async (req, res) => {
   }
 };
 
+const getConnectionsObj=async(req,res)=>{
+  const userId = req.userId.id;
+  const session = driver.session();
+  try{
+    const connectedQuery = `MATCH (u:User {userId: $userId})-[:CONNECTED]->(n:User)
+    RETURN n.userId as connectedUserId;    
+`;
+const values = {userId};
+const connectedResult = await session.run(connectedQuery,values);
+
+console.log(connectedResult.records[0]._fields );
+res.status(200).json(connectedResult.records[0]._fields);
+
+  }catch(error){
+    console.error("Error fetching connections:", error.message);
+    res.status(500).json({ error: "Error fetching connections" });
+}
+}
+
 // <-- End of FETCH USER RELATED INFORMATION -->
 
 const rejectRequest = async (req, res) => {
@@ -329,4 +348,4 @@ const searchUser = async (req, res) => {
 };
 
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph, getConnections, makeConnection, deleteConnection,searchUser,sendRequest,rejectRequest };
+export { fetchGraph, getConnections, makeConnection, deleteConnection,searchUser,sendRequest,rejectRequest,getConnectionsObj };

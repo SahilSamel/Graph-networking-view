@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import Graph from "@/components/Graph.tsx";
-import Message from "@/components/Message.tsx"
+import Chat from "@/components/Chat";
 
 const Home = () => {
     const router = useRouter();
@@ -8,7 +8,7 @@ const Home = () => {
     return(
         <>
             <Graph />
-            <Message />
+            {/* node={nodeToShowTooltip} */}
         </>
     );
 }

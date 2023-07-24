@@ -18,8 +18,9 @@ const getProfile = async (req, res) => {
     const result = await client.query(query, values);
 
     const profile = result.rows[0];
-
-    res.status(200);
+    console.log(profile);
+    res.status(200).json(profile);
+    
   } catch (error) {
     console.error("An error occurred:", error.message);
     res.status(500).json({ error: "Error retrieving profile" });
@@ -27,6 +28,10 @@ const getProfile = async (req, res) => {
     client.end();
   }
 };
+
+
+
+
 
 // Check if there is a relation
 const getIfConnected = async (req, res) => {
