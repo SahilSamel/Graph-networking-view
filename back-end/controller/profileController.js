@@ -18,9 +18,7 @@ const getProfile = async (req, res) => {
     const result = await client.query(query, values);
 
     const profile = result.rows[0];
-    console.log(profile);
-    res.status(200).json(profile);
-    
+    res.status(200).json({profile});
   } catch (error) {
     console.error("An error occurred:", error.message);
     res.status(500).json({ error: "Error retrieving profile" });

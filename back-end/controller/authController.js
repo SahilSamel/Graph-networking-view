@@ -4,11 +4,10 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import pkg from "pg";
-const { Client } = pkg;
-
 import dbConfig from "../connections/postgresConnection.js";
 import driver from "../connections/neo4j.js";
 import jwt from "jsonwebtoken";
+const { Client } = pkg;
 
 // <-- USER AUTH FUNCTIONS -->
 
@@ -85,7 +84,6 @@ const uidDatabaseCheck = async (req, res) => {
     const result = await client.query(query, values);
     if (result.rows[0].check_uid_exists) {
       res.status(200).json({ status: "OK" });
-      console.log("User information found");
     } else {
       res.status(404).json({ error: "User information not found" });
     }
