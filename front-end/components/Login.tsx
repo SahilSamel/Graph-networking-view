@@ -20,7 +20,8 @@ const Login = ({ toggleForm }: LoginProps) => {
 
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isEmailValid, setIsEmailValid] = useState<boolean>(false);
-  const [showUserCredentialsError, setShowUserCredentialsError] = useState<boolean>(false);
+  const [showUserCredentialsError, setShowUserCredentialsError] =
+    useState<boolean>(false);
 
   const {
     register,
@@ -50,7 +51,9 @@ const Login = ({ toggleForm }: LoginProps) => {
     if (errors.email && errors.email.type === "required") {
       return (
         <div className="w-full max-w-sm mx-auto mt-1">
-          <span className="text-red-500 text-xs">This field is required</span>
+          <span className="text-red-500 text-xs">
+            Please enter an email address
+          </span>
         </div>
       );
     }
@@ -81,9 +84,7 @@ const Login = ({ toggleForm }: LoginProps) => {
 
   const renderUserCredentialsError = () => {
     if (showUserCredentialsError && !errors.email && !errors.password) {
-      return (
-        <p className="text-red-500 text-xs mb-4">{errorMessage}</p>
-      );
+      return <p className="text-red-500 text-xs mb-4">{errorMessage}</p>;
     }
     return null;
   };
@@ -138,7 +139,11 @@ const Login = ({ toggleForm }: LoginProps) => {
             >
               Log in
             </button>
-            <div className="registration__form-separator"><span className="registration__form-separator-text"><div className="p-3 text-slate-500">or</div></span></div>
+            <div className="registration__form-separator">
+              <span className="registration__form-separator-text">
+                <div className="p-3 text-slate-500">or</div>
+              </span>
+            </div>
             <button
               className="flex items-center border border-transparent bg-white text-black font-bold py-2 px-4 rounded-md drop-shadow-lg hover:bg-slate-100 hover:border hover:filter-none focus:outline-none focus:shadow-outline"
               type="submit"
@@ -147,8 +152,8 @@ const Login = ({ toggleForm }: LoginProps) => {
                 src="https://firebasestorage.googleapis.com/v0/b/graph-networking-app.appspot.com/o/utility%2Fgoogle-icon.svg?alt=media&token=3cf598dd-2cc5-4c83-be58-5e58196b1245"
                 alt=""
                 style={{
-                  maxWidth:"20px",
-                  paddingRight:"5px"
+                  maxWidth: "20px",
+                  paddingRight: "5px",
                 }}
               />
               Google
