@@ -1,15 +1,12 @@
 import Leftbar from "@/components/Leftbar";
-import Message from "@/components/Message";
 
-const Mainlayout = (props) => {
-  const { middleComponent: MiddleComponent } = props;
-
+const Mainlayout = ({ middleComponent }) => {
   return (
     <>
-        <div className="flex flex-row justify-between">
-            <Leftbar />
-            <MiddleComponent {...props} />
-        </div>
+      <div className="flex flex-row justify-between">
+        <Leftbar />
+        {middleComponent}
+      </div>
     </>
   );
 };
