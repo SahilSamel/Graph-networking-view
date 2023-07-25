@@ -9,8 +9,12 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import GET from "@/api/GET/GET";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const Leftbar = () => {
+
+  const router = useRouter();
+
   useEffect(() => {
     GET(`/profile/getProfile`, function (err: any, data: any) {
       if (err) {
@@ -72,22 +76,22 @@ const Leftbar = () => {
             {renderProfile()}
 
             <div className="flex flex-col justify-end mr-8">
-              <div className="flex flex-row mb-7 ">
+              <button className="flex flex-row mb-7 " onClick={()=> router.push("/home")}>
                 <AiFillHome size={24} style={{ marginRight: "8px" }} />
                 Home
-              </div>
-              <div className="flex flex-row mb-7 ">
+              </button>
+              <button className="flex flex-row mb-7 " onClick={()=> router.push("/profile")}>
                 <AiOutlineUser size={24} style={{ marginRight: "8px" }} />
                 Profile
-              </div>
-              <div className="flex flex-row mb-7 ">
+              </button>
+              <button className="flex flex-row mb-7 " onClick={()=> router.push("/messages")}>
                 <AiOutlineMessage size={24} style={{ marginRight: "8px" }} />
                 Messages
-              </div>
-              <div className="flex flex-row mb-7 ">
+              </button>
+              <button className="flex flex-row mb-7 " onClick={()=> router.push("/settings")}>
                 <AiOutlineSetting size={24} style={{ marginRight: "8px" }} />
                 Settings
-              </div>
+              </button>
             </div>
           </div>
 
