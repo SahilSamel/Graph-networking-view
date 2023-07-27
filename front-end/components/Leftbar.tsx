@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import {
-  AiFillHome,
   AiOutlineUser,
   AiOutlineMessage,
   AiOutlineSetting,
 } from "react-icons/ai";
+import {HiOutlineHome} from "react-icons/hi"
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import GET from "@/api/GET/GET";
@@ -62,7 +62,7 @@ const Leftbar = () => {
   };
 
   return (
-    <div className="relative mobile:absolute mobile:z-10">
+    <div className="relative text-white bg-violet-800 mobile:absolute mobile:z-10">
       <div
         style={{
           position: "relative" ,
@@ -71,24 +71,24 @@ const Leftbar = () => {
         }}
         className="border-r-2 drop-shadow-md"
       >
-        <div className="flex flex-col content-between px-7 py-5 h-screen">
+        <div className="flex flex-col content-between py-5 h-screen">
           <div className="flex flex-col content-start">
             {renderProfile()}
 
             <div className="flex flex-col justify-end mr-8">
-              <button className="flex flex-row mb-7 " onClick={()=> router.push("/home")}>
-                <AiFillHome size={24} style={{ marginRight: "8px" }} />
+              <button className="flex flex-row mb-7 mx-5 hover:bg-violet-200" onClick={()=> router.push("/home")}>
+                <HiOutlineHome size={24} style={{ marginRight: "8px" }} />
                 Home
               </button>
-              <button className="flex flex-row mb-7 " onClick={()=> router.push("/profile")}>
+              <button className="flex flex-row mb-7 mx-5 hover:bg-violet-200" onClick={()=> router.push("/profile")}>
                 <AiOutlineUser size={24} style={{ marginRight: "8px" }} />
                 Profile
               </button>
-              <button className="flex flex-row mb-7 " onClick={()=> router.push("/messages")}>
+              <button className="flex flex-row mb-7 mx-5 hover:bg-violet-200" onClick={()=> router.push("/messages")}>
                 <AiOutlineMessage size={24} style={{ marginRight: "8px" }} />
                 Messages
               </button>
-              <button className="flex flex-row mb-7 " onClick={()=> router.push("/settings")}>
+              <button className="flex flex-row mb-7 mx-5 hover:bg-violet-200" onClick={()=> router.push("/settings")}>
                 <AiOutlineSetting size={24} style={{ marginRight: "8px" }} />
                 Settings
               </button>
