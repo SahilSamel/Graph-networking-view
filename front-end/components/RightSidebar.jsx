@@ -1,70 +1,63 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from "react";
 import POST from "@/api/POST/POST";
+import DisplayUser from "./DisplayUser";
+import DisplayCommunity from "./DisplayCommunity";
+import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import GET from "@/api/GET/GET";
 
+const Sidebar = ({ nodeid, commName, isComm }) => {
+  // Add state to control the visibility of the sidebar
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [recommendations, setRecommendations] = useState([]);
 
+  useEffect(() => {
+    console.log("Fetching Recommendations");
+    GET(`/graph/getRecommendations`, async function (err, data) {
+      if (err) {
+        console.log(err, "Error");
+      } else {
+        await setRecommendations(data);
+        console.log(recommendations);
+      }
+    });
+  }, []);
 
-const Sidebar = ({ nodeid  }) => {
-  const [node, setNode] = useState()
-    useEffect(() => {
-      const jsonData = JSON.stringify({nodeid})
-      console.log(jsonData)
-        POST ("/chat/getProfileFromId", jsonData, function (err, data) {
-          if (err) {
-            console.log(err);
-          } else {
-            if (data) {
-              console.log(data)
-              setNode(data)
-            }
-            
+  // Function to toggle the visibility of the sidebar
 
-          }
-        })
-    },[nodeid])
-
-    
   return (
-    <div className="fixed top-0 right-0 w-64 h-screen bg-gray-200 p-4 shadow">
-      {/* User Information */}
-      {node ? (
+    <div className="mobile:absolute mobile:z-10">
+      <div
+        className={`fixed top-0 right-0 w-64 h-screen p-4 shadow transition-transform duration-300 border-r-2 drop-shadow-md ${
+          showSidebar ? "transform translate-x-0" : "transform translate-x-full"
+        }`}
+      >
         <div>
-          <div className="flex justify-center mb-4">
-          <img
-            src={node.profile_image_url}
-            alt="Profile Picture"
-            className="w-24 h-24 rounded-full"
-          />
+          {/* User Information */}
+          {!isComm && <DisplayUser nodeid={nodeid} />}
+          {isComm && <DisplayCommunity commName={commName} />}
         </div>
-    
-      <div className="text-center">
-      <h2 className="text-lg font-semibold">{node.name}</h2>
-      <p className="text-gray-600">@{node.username}</p>
-      <p className="text-gray-700">{node.bio}</p>
-    </div>
 
-  
-    <div className="mt-4">
-      <p>
-        <strong>Email:</strong> {node.email}
-      </p>
-      <p>
-        <strong>Occupation:</strong> {node.occupation}
-      </p>
-      <p>
-        <strong>Education:</strong> {node.education}
-      </p>
-      <p>
-        <strong>Hobbies:</strong> {node.hobbies}
-      </p>
-      <p>
-        <strong>Connections:</strong> {node.num_connections}
-      </p>
-    </div>
-    </div>
-
-      ) : (
-        <p className="text-red-500">No user information available.</p>
-      )}
+        {/* Recommendations */}
+        {recommendations.length > 0 && (
+          <ul className="mt-4 space-y-4">
+            {recommendations.map((recommendation) => (
+              <li
+                key={recommendation.userId}
+                className="flex items-center space-x-4 px-2 py-1 rounded-lg cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100"
+              >
+                <img
+                  src={recommendation.profImgURL}
+                  alt="Profile Picture"
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-gray-600">@{recommendation.userName}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

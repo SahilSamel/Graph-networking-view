@@ -346,6 +346,35 @@ const searchUser = async (req, res) => {
     
 
 };
+const getRecommendations = async (req, res) => {
+  console.log("here")
+  const userId = req.userId.id;
+  console.log(userId);
+  const session = driver.session();
+  const query = `MATCH (user:User {userId: $userId})-[:CONNECTED*2]-(secondDegree:User)
+  WHERE NOT (user)-[:CONNECTED]-(secondDegree)
+  RETURN secondDegree
+  
+  `;
+  const values = { userId };
+  await session
+    .run(query, values)
+    .then((result) => {
+      console.log(result);
+      const recommendations = result.records.map((record) => record.get('secondDegree').properties);
+      console.log(recommendations);
+      res.json(recommendations);
+    })
+    .catch((error) => {
+      console.error('Error executing Neo4j query', error);
+      res.status(500).json({ error: 'An error occurred while fetching recommendations' });
+    })
+    .finally(() => {
+      session.close();
+    });
+};
+  
+  
 
 // <-- End of GRAPH FUNCTIONALITIES -->
-export { fetchGraph, getConnections, makeConnection, deleteConnection,searchUser,sendRequest,rejectRequest,getConnectionsObj };
+export { fetchGraph, getConnections, makeConnection, deleteConnection,searchUser,sendRequest,rejectRequest,getConnectionsObj,getRecommendations };

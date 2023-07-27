@@ -18,6 +18,15 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.js", "pages/home.js", "components/Chat.js", "components/RightSidebar.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/_app.js",
+    "pages/home.js",
+    "components/Chat.js",
+    "components/RightSidebar.jsx",
+    "components/DisplayUser.jsx"
+  ],
   "exclude": ["node_modules"]
 }
