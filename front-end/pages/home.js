@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Graph from "@/components/Graph.tsx";
 import GET from "@/api/GET/GET";
-import Mainlayout from "@/layout/Mainlayout.js"; // Assuming you have imported Mainlayout correctly
+import Leftbar from "@/components/Leftbar";
 
 const Home = () => {
   const router = useRouter();
@@ -25,9 +25,9 @@ const Home = () => {
   return (
     <>
       {isLoggedIn ? (
-        <Mainlayout middleComponent={Graph} />
+        <Graph />
       ) : (
-        <div>Loading...</div> // or any loading indicator while the authentication check is in progress
+        <div>Loading...</div>
       )}
     </>
   );
