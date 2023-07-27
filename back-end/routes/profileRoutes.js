@@ -10,12 +10,13 @@ router.get("/getProfile",verifyToken, (req, res)=>{
     getProfile(req,res);
 });
 
-router.get("/getConnected", verifyToken, (req, res) => {
-    getIfConnected(req, res);
-})
 
 router.post("/editProfile",verifyToken,(req, res)=>{
     editProfile(req,res);
+});
+
+router.post("/getIfConnected", verifyToken, (req, res) => {
+    getIfConnected(req, res);
 });
 
 // <-- End of PROFILE FUNCTIONALITIES -- >

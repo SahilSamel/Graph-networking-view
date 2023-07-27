@@ -2,6 +2,8 @@ import React, { useEffect, useState,useRef } from 'react';
 import { DataSet, Network, Node, Edge } from 'vis';
 import GET from "@/api/GET/GET";
 // import NodeTooltip from './Tooltip';
+import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+
 import Sidebar from './RightSidebar';
 
 
@@ -21,6 +23,8 @@ const Graph: React.FC = () => {
   // const [showTooltip, setShowTooltip] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [selectedCommName, setSelectedCommName] = useState<string | null>(null);
+  const [isCommunity,setIsCommunity] = useState(false);
 
   useEffect(() => {
     GET(`/graph/fetchGraph`,
@@ -66,26 +70,8 @@ const Graph: React.FC = () => {
           borderWidth: 5
         }
       };
-      
-  
+       
       const network = new Network(containerRef.current!, data, options);
-      
-      // network.on('hoverNode', (event: any) => {
-      //   const { pointer } = event;
-      //   const { x, y } = pointer.canvas;
-
-      //   const nodeId = data.nodes.get(event.node);
-      //   console.log(nodeId);
-      //   const node = graphData.nodes.find((node) => node.id === nodeId);
-      //   if (node) {
-      //     setTooltipPosition({ x, y });
-      //     setShowTooltip(true);
-      //   }
-      // });
-
-      // network.on('blurNode', () => {
-      //   setShowTooltip(false);
-      // });
 
       network.focus(loggedInUserId, {
         scale: 1.5,
@@ -94,54 +80,54 @@ const Graph: React.FC = () => {
           easingFunction: 'easeInOutQuart',
         },
       });
-      // network.on('click', (event) => {
-      //   const { pointer } = event;
-      //   const nodeId = event.nodes[0];
-      //   console.log(nodeId);
-      //   const { x, y } = pointer.DOM;
-      //   console.log(event);
-      //   console.log(x,y,typeof(x),typeof(y))
-      //   if (nodeId) {
-      //     const node = graphData.nodes.find((node) => node.id === nodeId);
-      //     if (node) {
-      //       setTooltipPosition( {x, y});
-      //       setShowTooltip(true);
-      //     }
-      //   }
-      // });
+    
       network.on('click', (event) => {
         const { pointer } = event;
         const nodeId = event.nodes[0];
        
           if (nodeId) {
+            
+            if(nodeId[0]==='C') {
+              setSelectedCommName(nodeId.toString().substring(10));
+              console.log("here",nodeId.toString().substring(10));
+              setIsCommunity(true);              
+              }else{
+              setSelectedNodeId(nodeId.toString().substring(5));
+              setIsCommunity(false);
+  
+              }
             setShowSidebar(true);
-            setSelectedNodeId(nodeId.toString().substring(5));
-            console.log(selectedNodeId);
+
           
         }
       }
+      
       );
     }
     
   }, [graphData, loggedInUserId]);
-  const nodeToShowTooltip = graphData?.nodes.find((node) => node.id === loggedInUserId);
+  const toggleSidebar = () => {
+    setShowSidebar((prev) => !prev);
+  };
 
-  return(
-    <div id="graph" style={{ height: '500px' }} ref={containerRef}>
-      {/* {showTooltip && graphData && loggedInUserId && 
-      (
-         <NodeTooltip
-         x={tooltipPosition.x}
-         y={tooltipPosition.y}
-         
-       />
-     )
-     } */}
-     {showSidebar && (
-        <Sidebar nodeid={selectedNodeId} />
+    return (
+    <div id="graph" style={{ height: '500px', position: 'relative' }} ref={containerRef} className='relative'>
+      {showSidebar && (
+        <>
+          <button
+            className={`toggle-button top-0 absolute p-2 rounded-full border mt-3 bg-white ${
+              showSidebar ? 'right-1' : 'left-3'
+            }`} // Adjusted the class based on showSidebar
+            onClick={toggleSidebar}
+            style={{ zIndex: 1000, }}
+          >
+            {showSidebar ? <IoIosArrowForward size={24} /> : <IoIosArrowBack size={24} />}
+          </button>
+          <Sidebar nodeid={selectedNodeId} commName={selectedCommName} isComm={isCommunity} />
+        </>
       )}
-     </div>
-  ) 
+    </div>
+  );
 };
 
 export default Graph;
